@@ -1,11 +1,28 @@
-# nestjs-typeorm-cursor-pagination
+# NestJS TypeORM Cursor Pagination Tools
 
-This library was generated with [Nx](https://nx.dev).
+[![npm](https://img.shields.io/npm/v/@adamwdennis/nestjs-typeorm-cursor-pagination)](https://www.npmjs.com/package/@adamwdennis/nestjs-typeorm-cursor-pagination)
+[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/adamwdennis/nestjs-api-dx/CI)]
 
-## Building
+This package provides a set of classes and functions to enable [Relay GraphQL Cursor Connections](https://relay.dev/graphql/connections.htm)-compliant cursor-based pagination for your NestJS GraphQL API (with TypeORM).
 
-Run `nx build nestjs-typeorm-cursor-pagination` to build the library.
+## Installation
 
-## Running unit tests
+```bash
+npm install nestjs-typeorm-cursor-pagination
+```
 
-Run `nx test nestjs-typeorm-cursor-pagination` to execute the unit tests via [Jest](https://jestjs.io).
+or
+
+```bash
+yarn add nestjs-typeorm-cursor-pagination
+```
+
+or
+
+```bash
+pnpm install nestjs-typeorm-cursor-pagination
+```
+
+## Usage
+
+TBD
