@@ -1,0 +1,22 @@
+{
+  "name": "@adamwdennis/nestjs-typeorm-cursor-pagination",
+  "version": "0.0.1",
+  "type": "commonjs",
+  "main": "./src/index.js",
+  "typings": "./src/index.d.ts",
+  "dependencies": {
+    "@nestjs/graphql": "^12.1.1",
+    "class-validator": "^0.14.1",
+    "tslib": "^2.3.0",
+    "typeorm": "^0.3.20"
+  },
+  "peerDependencies": {
+    "@nestjs/common": "^10.0.0",
+    "@nestjs/core": "^10.0.0",
+    "@nestjs/graphql": "^12.1.1",
+    "graphql": "^16.8.1",
+    "reflect-metadata": "^0.1.13",
+    "rxjs": "^7.8.1",
+    "typeorm": "^0.3.20"
+  }
+}

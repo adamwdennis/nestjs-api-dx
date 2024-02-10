@@ -21,6 +21,9 @@
     "paths": {
       "@adamwdennis/nestjs-cursor-pagination": [
         "packages/cursor-pagination/src"
+      ],
+      "@adamwdennis/nestjs-typeorm-cursor-pagination": [
+        "packages/nestjs-typeorm-cursor-pagination/src/index.ts"
       ]
     }
   }

@@ -1,9 +1,0 @@
-{
-  "name": "cursor-pagination",
-  "version": "0.0.1",
-  "main": "../../dist/packages/cursor-pagination/index.js",
-  "devDependencies": {},
-  "scripts": {
-    "build": "tsc src/index.ts --outDir ../../dist/packages/cursor-pagination"
-  }
-}
