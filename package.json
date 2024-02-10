@@ -3,10 +3,11 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {},
-  "private": true,
+  "private": false,
   "devDependencies": {
     "@nestjs/schematics": "^10.0.1",
     "@nestjs/testing": "^10.0.2",
+    "@nx/devkit": "^18.0.4",
     "@nx/jest": "18.0.4",
     "@nx/js": "18.0.4",
     "@nx/nest": "18.0.4",

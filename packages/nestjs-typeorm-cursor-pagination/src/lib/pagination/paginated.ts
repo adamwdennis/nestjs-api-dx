@@ -44,7 +44,9 @@ export interface IPaginatedType<T> {
  *
  * Based on https://docs.nestjs.com/graphql/resolvers#generics
  *
- * @param classRef
+ * @param classRef The class reference
+ * @param name The name of the paginated type
+ * @returns The paginated type
  */
 export function Paginated<T>(
   classRef: Type<T>,

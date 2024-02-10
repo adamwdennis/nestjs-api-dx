@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 
 import { Repository } from 'typeorm';
-import { PaginationArgs } from '../pagination.args';
+import { PaginationArgs } from '../pagination/pagination.args';
 import { NodeEntity } from '../entities/NodeEntity';
-import { IPaginatedType } from '../paginated';
+import { IPaginatedType } from '../pagination/paginated';
 
 /**
  * This is an abstrct, generic service class that can be used to create a
