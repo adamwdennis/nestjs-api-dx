@@ -1,6 +1,6 @@
 {
   "name": "@adamwdennis/nestjs-typeorm-cursor-pagination",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "type": "commonjs",
   "main": "./src/index.js",
   "typings": "./src/index.d.ts",
