@@ -8,6 +8,7 @@
     "@nestjs/schematics": "^10.0.1",
     "@nestjs/testing": "^10.0.2",
     "@nx/devkit": "^18.0.4",
+    "@nx/eslint-plugin": "^18.0.4",
     "@nx/jest": "18.0.4",
     "@nx/js": "18.0.4",
     "@nx/nest": "18.0.4",
