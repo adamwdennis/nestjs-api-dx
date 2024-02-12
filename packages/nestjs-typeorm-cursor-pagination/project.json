@@ -1,0 +1,24 @@
+{
+  "name": "nestjs-typeorm-cursor-pagination",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/nestjs-typeorm-cursor-pagination/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/nestjs-typeorm-cursor-pagination",
+        "tsConfig": "packages/nestjs-typeorm-cursor-pagination/tsconfig.lib.json",
+        "packageJson": "packages/nestjs-typeorm-cursor-pagination/package.json",
+        "main": "packages/nestjs-typeorm-cursor-pagination/src/index.ts",
+        "assets": ["packages/nestjs-typeorm-cursor-pagination/*.md"]
+      }
+    },
+    "publish": {
+      "command": "node tools/scripts/publish.mjs nestjs-typeorm-cursor-pagination {args.ver} {args.tag}",
+      "dependsOn": ["build"]
+    }
+  },
+  "tags": []
+}
