@@ -10,6 +10,10 @@
 pnpm nx release publish
 ```
 
+```bash
+pnpm nx build nestjs-typeorm-cursor-pagination; npm publish dist/packages/nestjs-typeorm-cursor-pagination
+```
+
 ## Generate code
 
 If you happen to use Nx plugins, you can leverage code generators that might come with it.

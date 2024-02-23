@@ -44,31 +44,32 @@ export async function paginate<T extends object>(
   paginationArgs: PaginationArgs,
   cursorColumn = 'id',
 ): Promise<IPaginatedType<T>> {
+  const totalCountQuery = query.clone();
   const columnId =
     cursorColumn.split('.').length > 1
       ? cursorColumn.split('.').slice(1)[0]
       : cursorColumn;
 
-  const order = paginationArgs.reverse ? 'DESC' : 'ASC';
-  query.orderBy({ [cursorColumn]: order });
-
-  let limit = paginationArgs.first ?? paginationArgs.last ?? 25;
-
   let cursor: Cursor | null = null;
+  let order: 'ASC' | 'DESC' = paginationArgs.reverse ? 'DESC' : 'ASC';
+  let limit = paginationArgs.first ?? paginationArgs.last ?? 25;
 
   if (paginationArgs.first) {
     // FORWARD pagination
     limit = paginationArgs.first;
+    order = paginationArgs.reverse ? 'DESC' : 'ASC';
     if (paginationArgs.after) {
       cursor = new Cursor(paginationArgs.after);
     }
   } else if (paginationArgs.last) {
     // REVERSE pagination
     limit = paginationArgs.last;
+    order = paginationArgs.reverse ? 'ASC' : 'DESC';
     if (paginationArgs.before) {
       cursor = new Cursor(paginationArgs.before);
     }
   }
+  query.orderBy({ [cursorColumn]: order });
 
   if (cursor) {
     const cursorWhereClause = getCursorWhereClause(
@@ -82,21 +83,23 @@ export async function paginate<T extends object>(
       query.where(cursorWhereClause);
     }
   }
-
   query.take(limit);
 
-  const result: T[] = await query.getMany();
+  let result: T[] = await query.getMany();
+  if (paginationArgs.last) {
+    result = result.reverse();
+  }
 
   const { countBefore, countAfter } = await getCounts(
     result,
+    totalCountQuery,
     query,
     columnId,
     paginationArgs,
-    cursor,
   );
 
   const edges = getEdges(result, columnId);
-  const pageInfo = getPageInfo(edges, 0, 0);
+  const pageInfo = getPageInfo(edges, countBefore, countAfter);
 
   return {
     edges,
@@ -154,43 +157,40 @@ function getCursorWhereClause(
 
 async function getCounts<T extends object>(
   result: T[],
+  totalCountQuery: SelectQueryBuilder<T>,
   query: SelectQueryBuilder<T>,
   columnId: string,
   paginationArgs: PaginationArgs,
-  cursor?: Cursor | null,
 ) {
-  const totalCountQuery = query.clone();
   const beforeQuery = totalCountQuery.clone();
   const afterQuery = totalCountQuery.clone();
 
-  if (cursor) {
-    const startCursorId =
-      result.length > 0 ? (result[0] as IIndexable)[columnId] : null;
-    const endCursorId =
-      result.length > 0 ? (result.slice(-1)[0] as IIndexable)[columnId] : null;
+  const startCursorId =
+    result.length > 0 ? (result[0] as IIndexable)[columnId] : null;
+  const endCursorId =
+    result.length > 0 ? (result.slice(-1)[0] as IIndexable)[columnId] : null;
 
-    const beforeWhereClause = {
-      [columnId]: paginationArgs.reverse
-        ? MoreThan(startCursorId)
-        : LessThan(startCursorId),
-    };
-    const afterWhereClause = {
-      [columnId]: paginationArgs.reverse
-        ? LessThan(endCursorId)
-        : MoreThan(endCursorId),
-    };
+  const beforeWhereClause = {
+    [columnId]: paginationArgs.reverse
+      ? MoreThan(startCursorId)
+      : LessThan(startCursorId),
+  };
+  const afterWhereClause = {
+    [columnId]: paginationArgs.reverse
+      ? LessThan(endCursorId)
+      : MoreThan(endCursorId),
+  };
 
-    if (beforeQuery.expressionMap.wheres?.length > 0) {
-      beforeQuery.andWhere(beforeWhereClause);
-    } else {
-      beforeQuery.where(beforeWhereClause);
-    }
+  if (beforeQuery.expressionMap.wheres?.length > 0) {
+    beforeQuery.andWhere(beforeWhereClause);
+  } else {
+    beforeQuery.where(beforeWhereClause);
+  }
 
-    if (afterQuery.expressionMap.wheres?.length > 0) {
-      afterQuery.andWhere(afterWhereClause);
-    } else {
-      afterQuery.where(afterWhereClause);
-    }
+  if (afterQuery.expressionMap.wheres?.length > 0) {
+    afterQuery.andWhere(afterWhereClause);
+  } else {
+    afterQuery.where(afterWhereClause);
   }
 
   const countBefore = await beforeQuery.getCount();

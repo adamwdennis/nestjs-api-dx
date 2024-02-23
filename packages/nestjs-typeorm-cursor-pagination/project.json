@@ -6,18 +6,39 @@
   "targets": {
     "build": {
       "executor": "@nx/js:tsc",
-      "outputs": ["{options.outputPath}"],
+      "outputs": [
+        "{workspaceRoot}/dist/packages/nestjs-typeorm-cursor-pagination"
+      ],
       "options": {
-        "outputPath": "dist/packages/nestjs-typeorm-cursor-pagination",
+        "outputPath": "{workspaceRoot}/dist/packages/nestjs-typeorm-cursor-pagination",
         "tsConfig": "packages/nestjs-typeorm-cursor-pagination/tsconfig.lib.json",
         "packageJson": "packages/nestjs-typeorm-cursor-pagination/package.json",
         "main": "packages/nestjs-typeorm-cursor-pagination/src/index.ts",
-        "assets": ["packages/nestjs-typeorm-cursor-pagination/*.md"]
+        "assets": [
+          "packages/nestjs-typeorm-cursor-pagination/*.md",
+          {
+            "input": "packages/nestjs-typeorm-cursor-pagination",
+            "glob": "**/*.json",
+            "ignore": ["**/tsconfig*.json", "project.json", ".eslintrc.json"],
+            "output": "/"
+          },
+          {
+            "input": "packages/nestjs-typeorm-cursor-pagination",
+            "glob": "**/*.js",
+            "ignore": ["**/jest.config.js"],
+            "output": "/"
+          },
+          {
+            "input": "packages/nestjs-typeorm-cursor-pagination",
+            "glob": "**/*.d.ts",
+            "output": "/"
+          }
+        ]
       }
     },
     "publish": {
       "command": "node tools/scripts/publish.mjs nestjs-typeorm-cursor-pagination {args.ver} {args.tag}",
-      "dependsOn": ["build"]
+      "dependsOn": ["^build"]
     }
   },
   "tags": []

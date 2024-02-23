@@ -1,13 +1,13 @@
 {
   "name": "@adamwdennis/nestjs-typeorm-cursor-pagination",
-  "version": "0.0.4",
+  "version": "0.0.18",
   "author": {
     "name": "Adam Dennis"
   },
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/adamwdennis/nestjs-api-dx",
+    "url": "git+https://github.com/adamwdennis/nestjs-api-dx.git",
     "directory": "packages/nestjs-typeorm-cursor-pagination"
   },
   "keywords": [
@@ -18,7 +18,7 @@
     "Relay",
     "GraphQL"
   ],
-  "type": "commonjs",
+  "type": "module",
   "main": "./src/index.js",
   "typings": "./src/index.d.ts",
   "private": false,

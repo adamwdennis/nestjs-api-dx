@@ -1,6 +1,6 @@
 {
   "name": "nestjs-api-dx",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "license": "MIT",
   "scripts": {},
   "private": false,
@@ -33,7 +33,7 @@
     "verdaccio": "^5.0.4"
   },
   "workspaces": [
-    "packages/*"
+    "packages/nestjs-typeorm-cursor-pagination"
   ],
   "dependencies": {
     "@nestjs/common": "^10.0.2",

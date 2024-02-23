@@ -1,35 +1,43 @@
-import { Field } from '@nestjs/graphql';
-import { IsDefined, IsEnum, IsString } from 'class-validator';
+import { IsDefined, IsEnum, IsOptional, IsString } from 'class-validator';
 import { ComparisonOperatorEnum } from '../operators/comparison-operator.enum';
 
+/**
+ * This class represents the input for a filter
+ * @example { field: 'Entity.field', operator: ComparisonOperatorEnum.EQUALS, value: 'value' }
+ * @example { field: 'Entity.field', operator: ComparisonOperatorEnum.IN, value: ['value1', 'value2'] }
+ * @example { field: 'RelatedEntity.id', relationField: 'Entity.manyToOneField' }
+ */
 export class FilterInput {
-  @Field(() => String, {
-    description: 'The field to filter on',
-    nullable: false,
-  })
+  /**
+   * The field to filter on
+   * @example 'Entity.field'
+   * @type {string}
+   */
   @IsString()
   @IsDefined()
-  field!: string; // keyof T;
+  field!: string;
 
-  @Field(() => ComparisonOperatorEnum, {
-    description: 'The comparison operator to use',
-    nullable: false,
-  })
+  /**
+   * The operator to use for the filter
+   * @type {ComparisonOperatorEnum}
+   */
   @IsEnum(ComparisonOperatorEnum)
-  @IsDefined()
-  operator!: ComparisonOperatorEnum;
+  @IsOptional()
+  operator?: ComparisonOperatorEnum;
 
-  @Field(() => String, {
-    description: 'The value to compare against',
-    nullable: false,
-  })
+  /**
+   * The value to filter on
+   * @type {any}
+   */
   @IsString()
-  @IsDefined()
-  value!: string;
+  @IsOptional()
+  value?: any;
 
   /**
    * The field to filter on in the relation
    * For internal use only.
+   * @type {string}
+   * @example 'RelatedEntity.field'
    */
   relationField?: string;
 }
