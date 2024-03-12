@@ -24,6 +24,13 @@ export enum ComparisonOperatorEnum {
    */
   EQUAL = 'eq',
   /**
+   * Between operator.
+   * Useful for numbers or dates.
+   * This is the same as the BETWEEN operator in SQL, which means "is between the values".
+   * @example { id: { between: [1, 4] } }
+   */
+  BETWEEN = 'between',
+  /**
    * Greater than operator.
    * Useful for numbers or dates.
    * This is the same as the > operator in SQL.

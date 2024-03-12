@@ -83,6 +83,11 @@ export class WhereBuilder<T extends object> {
         this.params[paramName] = filter.value;
         return `${filter.field} = :${paramName}`;
       }
+      case ComparisonOperatorEnum.BETWEEN: {
+        this.params[paramName] = filter.value[0];
+        this.params[paramName + 1] = filter.value[1];
+        return `${filter.field} BETWEEN :${paramName} AND :${paramName + 1}`;
+      }
       case ComparisonOperatorEnum.IN: {
         this.params[paramName] = filter.value;
         return `${filter.field} IN (:...${paramName})`;

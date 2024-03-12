@@ -2,7 +2,9 @@
   "name": "nestjs-api-dx",
   "version": "0.0.1",
   "license": "MIT",
-  "scripts": {},
+  "scripts": {
+    "build": "nx run-many --target=build --all"
+  },
   "private": false,
   "devDependencies": {
     "@nestjs/schematics": "^10.0.1",
