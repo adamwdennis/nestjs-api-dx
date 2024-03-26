@@ -3,7 +3,8 @@
   "version": "0.0.1",
   "license": "MIT",
   "scripts": {
-    "build": "nx run-many --target=build --all"
+    "build": "nx run-many --target=build --all",
+    "publish": "npm publish dist/packages/nestjs-typeorm-cursor-pagination"
   },
   "private": false,
   "devDependencies": {
