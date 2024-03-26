@@ -114,17 +114,6 @@ export async function paginate<T extends object>(
   };
 }
 
-function convertBufferToDate(offsetId: string, columnId: string): string {
-  let columnIdFromOffset = offsetId;
-  if (columnId === 'createdAt' || columnId === 'updatedAt') {
-    columnIdFromOffset = new Date(
-      new Date(offsetId).getTime() -
-        new Date(offsetId.slice(0, -1)).getTimezoneOffset() * 60000,
-    ).toISOString();
-  }
-  return columnIdFromOffset;
-}
-
 function getCursorWhereClause<T extends object>(
   query: SelectQueryBuilder<T>,
   cursor: Cursor,
@@ -141,9 +130,6 @@ function getCursorWhereClause<T extends object>(
     primaryColumnOffset = offsetId.split(multiColumnDelimiter)[0];
     secondaryColumnOffset = offsetId.split(multiColumnDelimiter)[1];
   }
-  // if (columnId === 'createdAt' || columnId === 'updatedAt') {
-  //   nonIdColumnOffset = convertBufferToDate(offsetId, columnId);
-  // }
 
   const whereClause: ObjectLiteral = {};
 
@@ -189,10 +175,10 @@ async function getCounts<T extends object>(
   const beforeQuery = totalCountQuery.clone();
   const afterQuery = totalCountQuery.clone();
 
-  let primaryStartCursorId: Type | null = null;
-  let primaryEndCursorId: Type | null = null;
-  let secondaryStartCursorId: Type | null;
-  let secondaryEndCursorId: Type | null;
+  let primaryStartCursorId: unknown = null;
+  let primaryEndCursorId: unknown = null;
+  let secondaryStartCursorId: unknown = null;
+  let secondaryEndCursorId: unknown = null;
 
   if (result.length > 0) {
     primaryStartCursorId = (result[0] as IIndexable)[columnId];
@@ -269,12 +255,14 @@ function getEdges<T>(result: T[], columnId: string): IEdgeType<T>[] {
   return result.map((value) => {
     let cursor: string | null = null;
     if (columnId !== 'id') {
-      const nonIdColumn = (value as IIndexable)[columnId];
       const id = (value as IIndexable)['id'];
+      const nonIdColumn = (value as IIndexable)[columnId];
+
       cursor = new Cursor(
         `${nonIdColumn}${multiColumnDelimiter}${id}`,
         columnId,
       ).encode();
+      // }
     } else {
       const id = (value as IIndexable)[columnId];
       cursor = new Cursor(`${id}`, columnId).encode();
