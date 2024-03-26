@@ -82,7 +82,8 @@ export async function paginate<T extends object>(
   // add a secondary order by id to ensure that the results are deterministic.
   // This is necessary because the cursor column may not be unique.
   if (columnId !== 'id') {
-    query.addOrderBy('id', order);
+    const entityName = cursorColumn.split('.').slice(0)[0];
+    query.addOrderBy(`${entityName}.id`, order);
   }
 
   if (cursor) {
