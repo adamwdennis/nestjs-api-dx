@@ -1,6 +1,6 @@
 {
   "name": "@adamwdennis/nestjs-typeorm-cursor-pagination",
-  "version": "0.0.19",
+  "version": "0.0.22",
   "author": {
     "name": "Adam Dennis"
   },

@@ -23,17 +23,23 @@
  */
 
 import { Type } from '@nestjs/common';
-import { Buffer } from 'buffer';
-import { LessThan, MoreThan, SelectQueryBuilder } from 'typeorm';
+import {
+  Brackets,
+  LessThan,
+  MoreThan,
+  ObjectLiteral,
+  SelectQueryBuilder,
+} from 'typeorm';
 import { Cursor } from './cursor';
 import { PageInfo } from './page-info';
-import { IEdgeType, IPaginatedType } from './paginated';
+import { IPaginatedType, IEdgeType } from './paginated';
 import { PaginationArgs } from './pagination.args';
 
 interface IIndexable<T = Type> {
   [key: string]: T;
 }
 
+const multiColumnDelimiter = '|';
 /**
  * Inspired by:
  * - https://gist.github.com/tumainimosha/6652deb0aea172f7f2c4b2077c72d16c
@@ -59,29 +65,28 @@ export async function paginate<T extends object>(
     limit = paginationArgs.first;
     order = paginationArgs.reverse ? 'DESC' : 'ASC';
     if (paginationArgs.after) {
-      cursor = new Cursor(paginationArgs.after);
+      cursor = new Cursor(paginationArgs.after, cursorColumn);
     }
   } else if (paginationArgs.last) {
     // REVERSE pagination
     limit = paginationArgs.last;
     order = paginationArgs.reverse ? 'ASC' : 'DESC';
     if (paginationArgs.before) {
-      cursor = new Cursor(paginationArgs.before);
+      cursor = new Cursor(paginationArgs.before, cursorColumn);
     }
   }
+  // Apply the order by clause
   query.orderBy({ [cursorColumn]: order });
 
+  // If the cursor column is not the id (unique, primary key), we need to
+  // add a secondary order by id to ensure that the results are deterministic.
+  // This is necessary because the cursor column may not be unique.
+  if (columnId !== 'id') {
+    query.addOrderBy('id', order);
+  }
+
   if (cursor) {
-    const cursorWhereClause = getCursorWhereClause(
-      cursor,
-      columnId,
-      paginationArgs,
-    );
-    if (query.expressionMap.wheres && query.expressionMap.wheres.length) {
-      query.andWhere(cursorWhereClause);
-    } else {
-      query.where(cursorWhereClause);
-    }
+    getCursorWhereClause(query, cursor, columnId, paginationArgs);
   }
   query.take(limit);
 
@@ -119,40 +124,58 @@ function convertBufferToDate(offsetId: string, columnId: string): string {
   return columnIdFromOffset;
 }
 
-function getCursorWhereClause(
+function getCursorWhereClause<T extends object>(
+  query: SelectQueryBuilder<T>,
   cursor: Cursor,
   columnId: string,
   paginationArgs: PaginationArgs,
-) {
+): ObjectLiteral {
   const offsetId = cursor.decode();
-  let columnIdFromOffset = offsetId;
-  if (columnId === 'createdAt' || columnId === 'updatedAt') {
-    columnIdFromOffset = convertBufferToDate(offsetId, columnId);
+
+  let primaryColumnOffset: string | null = null;
+  let secondaryColumnOffset: string | null = null;
+  if (columnId === 'id') {
+    primaryColumnOffset = offsetId;
+  } else {
+    primaryColumnOffset = offsetId.split(multiColumnDelimiter)[0];
+    secondaryColumnOffset = offsetId.split(multiColumnDelimiter)[1];
   }
+  // if (columnId === 'createdAt' || columnId === 'updatedAt') {
+  //   nonIdColumnOffset = convertBufferToDate(offsetId, columnId);
+  // }
+
+  const whereClause: ObjectLiteral = {};
+
+  let findOperator: typeof LessThan | typeof MoreThan;
 
   if (paginationArgs.first && paginationArgs.after) {
-    if (paginationArgs.reverse) {
-      return {
-        [columnId]: LessThan(columnIdFromOffset),
-      };
-    } else {
-      return {
-        [columnId]: MoreThan(columnIdFromOffset),
-      };
-    }
+    findOperator = paginationArgs.reverse ? LessThan : MoreThan;
   } else if (paginationArgs.last && paginationArgs.before) {
-    if (paginationArgs.reverse) {
-      return {
-        [columnId]: MoreThan(columnIdFromOffset),
-      };
-    } else {
-      return {
-        [columnId]: LessThan(columnIdFromOffset),
-      };
-    }
+    findOperator = paginationArgs.reverse ? MoreThan : LessThan;
   } else {
     throw new Error('Invalid cursor pagination arguments');
   }
+
+  const whereExpression = new Brackets((qb) => {
+    qb.where({ [columnId]: findOperator(primaryColumnOffset) });
+    if (columnId !== 'id') {
+      qb.orWhere(
+        new Brackets((qb) => {
+          qb.where({
+            [columnId]: primaryColumnOffset,
+          }).andWhere({
+            id: findOperator(secondaryColumnOffset),
+          });
+        }),
+      );
+    }
+  });
+  if (query.expressionMap.wheres && query.expressionMap.wheres.length) {
+    query.andWhere(whereExpression);
+  } else {
+    query.where(whereExpression);
+  }
+  return whereClause;
 }
 
 async function getCounts<T extends object>(
@@ -165,32 +188,71 @@ async function getCounts<T extends object>(
   const beforeQuery = totalCountQuery.clone();
   const afterQuery = totalCountQuery.clone();
 
-  const startCursorId =
-    result.length > 0 ? (result[0] as IIndexable)[columnId] : null;
-  const endCursorId =
-    result.length > 0 ? (result.slice(-1)[0] as IIndexable)[columnId] : null;
+  let primaryStartCursorId: Type | null = null;
+  let primaryEndCursorId: Type | null = null;
+  let secondaryStartCursorId: Type | null;
+  let secondaryEndCursorId: Type | null;
 
-  const beforeWhereClause = {
-    [columnId]: paginationArgs.reverse
-      ? MoreThan(startCursorId)
-      : LessThan(startCursorId),
-  };
-  const afterWhereClause = {
-    [columnId]: paginationArgs.reverse
-      ? LessThan(endCursorId)
-      : MoreThan(endCursorId),
-  };
+  if (result.length > 0) {
+    primaryStartCursorId = (result[0] as IIndexable)[columnId];
+    primaryEndCursorId = (result.slice(-1)[0] as IIndexable)[columnId];
+    if (columnId !== 'id') {
+      secondaryStartCursorId = (result[0] as IIndexable)['id'];
+      secondaryEndCursorId = (result.slice(-1)[0] as IIndexable)['id'];
+    }
+  }
+
+  let findOperatorBefore: typeof LessThan | typeof MoreThan;
+  let findOperatorAfter: typeof LessThan | typeof MoreThan;
+
+  if (paginationArgs.reverse) {
+    findOperatorBefore = MoreThan;
+    findOperatorAfter = LessThan;
+  } else {
+    findOperatorBefore = LessThan;
+    findOperatorAfter = MoreThan;
+  }
+
+  const whereExpressionBefore = new Brackets((qb) => {
+    qb.where({ [columnId]: findOperatorBefore(primaryStartCursorId) });
+    if (columnId !== 'id') {
+      qb.orWhere(
+        new Brackets((qb) => {
+          qb.where({
+            [columnId]: primaryStartCursorId,
+          }).andWhere({
+            id: findOperatorBefore(secondaryStartCursorId),
+          });
+        }),
+      );
+    }
+  });
+
+  const whereExpressionAfter = new Brackets((qb) => {
+    qb.where({ [columnId]: findOperatorAfter(primaryEndCursorId) });
+    if (columnId !== 'id') {
+      qb.orWhere(
+        new Brackets((qb) => {
+          qb.where({
+            [columnId]: primaryEndCursorId,
+          }).andWhere({
+            id: findOperatorAfter(secondaryEndCursorId),
+          });
+        }),
+      );
+    }
+  });
 
   if (beforeQuery.expressionMap.wheres?.length > 0) {
-    beforeQuery.andWhere(beforeWhereClause);
+    beforeQuery.andWhere(whereExpressionBefore);
   } else {
-    beforeQuery.where(beforeWhereClause);
+    beforeQuery.where(whereExpressionBefore);
   }
 
   if (afterQuery.expressionMap.wheres?.length > 0) {
-    afterQuery.andWhere(afterWhereClause);
+    afterQuery.andWhere(whereExpressionAfter);
   } else {
-    afterQuery.where(afterWhereClause);
+    afterQuery.where(whereExpressionAfter);
   }
 
   const countBefore = await beforeQuery.getCount();
@@ -204,15 +266,22 @@ async function getCounts<T extends object>(
 
 function getEdges<T>(result: T[], columnId: string): IEdgeType<T>[] {
   return result.map((value) => {
-    let bufferValue = (value as IIndexable)[columnId];
-    if (columnId === 'createdAt' || columnId === 'updatedAt') {
-      bufferValue = new Date(
-        String(bufferValue),
-      ).toISOString() as unknown as Type<T>;
+    let cursor: string | null = null;
+    if (columnId !== 'id') {
+      const nonIdColumn = (value as IIndexable)[columnId];
+      const id = (value as IIndexable)['id'];
+      cursor = new Cursor(
+        `${nonIdColumn}${multiColumnDelimiter}${id}`,
+        columnId,
+      ).encode();
+    } else {
+      const id = (value as IIndexable)[columnId];
+      cursor = new Cursor(`${id}`, columnId).encode();
     }
+
     return {
       node: value,
-      cursor: Buffer.from(`${bufferValue}`).toString('base64'),
+      cursor: cursor,
     };
   });
 }
