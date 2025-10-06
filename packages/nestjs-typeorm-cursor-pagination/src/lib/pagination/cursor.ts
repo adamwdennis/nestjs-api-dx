@@ -21,6 +21,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+import { Buffer } from 'node:buffer';
+
 export class Cursor {
   private cursor: string;
   private columnId: string;
