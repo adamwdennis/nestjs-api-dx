@@ -32,7 +32,7 @@ import {
 } from 'typeorm';
 import { Cursor } from './cursor';
 import { PageInfo } from './page-info';
-import { IPaginatedType, IEdgeType } from './paginated';
+import { IEdgeType, IPaginatedType } from './paginated';
 import { PaginationArgs } from './pagination.args';
 
 interface IIndexable<T = Type> {
@@ -55,6 +55,9 @@ export async function paginate<T extends object>(
     cursorColumn.split('.').length > 1
       ? cursorColumn.split('.').slice(1)[0]
       : cursorColumn;
+  if (!columnId) {
+    throw new Error('Cursor column is required');
+  }
 
   let cursor: Cursor | null = null;
   let order: 'ASC' | 'DESC' = paginationArgs.reverse ? 'DESC' : 'ASC';
@@ -110,7 +113,6 @@ export async function paginate<T extends object>(
   return {
     edges,
     pageInfo,
-    totalCount: countAfter + countBefore + edges.length,
   };
 }
 
@@ -127,8 +129,8 @@ function getCursorWhereClause<T extends object>(
   if (columnId === 'id') {
     primaryColumnOffset = offsetId;
   } else {
-    primaryColumnOffset = offsetId.split(multiColumnDelimiter)[0];
-    secondaryColumnOffset = offsetId.split(multiColumnDelimiter)[1];
+    primaryColumnOffset = offsetId.split(multiColumnDelimiter)[0] ?? null;
+    secondaryColumnOffset = offsetId.split(multiColumnDelimiter)[1] ?? null;
   }
 
   const whereClause: ObjectLiteral = {};
@@ -280,11 +282,15 @@ function getPageInfo<T>(
   countBefore: number,
   countAfter: number,
 ): PageInfo {
-  const pageInfo = new PageInfo();
-  pageInfo.startCursor = edges.length > 0 ? edges[0].cursor : undefined;
-  pageInfo.endCursor = edges.length > 0 ? edges.slice(-1)[0].cursor : undefined;
-  pageInfo.hasNextPage = countAfter > 0;
-  pageInfo.hasPreviousPage = countBefore > 0;
+  const pageInfo = new PageInfo({
+    startCursor: edges[0]?.cursor ?? undefined,
+    endCursor: edges.at(-1)?.cursor ?? undefined,
+    hasNextPage: countAfter > 0,
+    hasPreviousPage: countBefore > 0,
+    totalCount: countAfter + countBefore + edges.length,
+    countBefore,
+    countAfter,
+  });
 
   return pageInfo;
 }

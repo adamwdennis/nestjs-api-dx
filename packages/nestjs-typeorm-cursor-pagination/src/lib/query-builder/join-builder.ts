@@ -63,6 +63,9 @@ export class JoinBuilder<T extends object> {
 
   private addJoinEntity(field: string, relationField?: string) {
     const entityName = field.split('.')[0];
+    if(!entityName) {
+      throw new Error('Entity name is required');
+    }
 
     if (relationField && !this.joinedEntities.has(entityName)) {
       this.qb.leftJoinAndSelect(relationField, entityName);
