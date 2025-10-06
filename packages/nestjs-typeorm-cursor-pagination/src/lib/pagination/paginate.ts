@@ -50,6 +50,11 @@ export async function paginate<T extends object>(
   paginationArgs: PaginationArgs,
   cursorColumn = 'id',
 ): Promise<IPaginatedType<T>> {
+  // Validate pagination arguments
+  if (paginationArgs.first && paginationArgs.last) {
+    throw new Error('Cannot use both "first" and "last" parameters');
+  }
+
   const totalCountQuery = query.clone();
   const columnId =
     cursorColumn.split('.').length > 1
