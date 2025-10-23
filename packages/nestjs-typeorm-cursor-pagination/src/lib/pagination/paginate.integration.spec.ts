@@ -31,6 +31,7 @@ import {
   seedTestData,
   closeTestDatabase,
 } from '../test-utils/test-database.setup';
+import { IPaginatedType } from './paginated';
 
 describe('paginate - Integration Tests', () => {
   let dataSource: DataSource;
@@ -410,7 +411,7 @@ describe('paginate - Integration Tests', () => {
 
       // Both first and last
       await expect(
-        paginate(queryBuilder, { first: 10, last: 10 } as any, 'TestProduct.id')
+        paginate(queryBuilder, { first: 10, last: 10 }, 'TestProduct.id')
       ).rejects.toThrow();
     });
   });
@@ -418,7 +419,7 @@ describe('paginate - Integration Tests', () => {
   describe('performance with larger datasets', () => {
     it('should efficiently handle multiple pagination requests', async () => {
       const pageSize = 5;
-      const pages: any[] = [];
+      const pages: IPaginatedType<TestProduct>[] = [];
       let cursor: string | undefined = undefined;
 
       // Paginate through all items
@@ -437,7 +438,7 @@ describe('paginate - Integration Tests', () => {
       }
 
       // Verify complete coverage without duplicates
-      const allIds = pages.flatMap((p) => p.edges.map((e: any) => e.node.id));
+      const allIds = pages.flatMap((p) => p.edges.map((e) => e.node.id));
       const uniqueIds = new Set(allIds);
       expect(allIds.length).toBe(uniqueIds.size);
     });

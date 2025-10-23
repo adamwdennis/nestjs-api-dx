@@ -35,6 +35,7 @@
     "jest": "30.0.5",
     "jest-environment-node": "^29.4.1",
     "jest-util": "30.0.5",
+    "jiti": "^2.6.1",
     "jsonc-eslint-parser": "^2.4.1",
     "nx": "22.0.1",
     "prettier": "^3.6.2",
