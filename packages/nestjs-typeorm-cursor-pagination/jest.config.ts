@@ -1,4 +1,3 @@
-/* eslint-disable */
 export default {
   displayName: 'nestjs-typeorm-cursor-pagination',
   preset: '../../jest.preset.js',

@@ -167,10 +167,12 @@ describe('isEmptyValue', () => {
 
   describe('functions', () => {
     it('should return false for function', () => {
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
       expect(isEmptyValue(() => {})).toBe(false);
     });
 
     it('should return false for named function', () => {
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
       expect(isEmptyValue(function test() {})).toBe(false);
     });
   });
