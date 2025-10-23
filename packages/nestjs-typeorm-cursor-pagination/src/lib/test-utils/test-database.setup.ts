@@ -86,9 +86,8 @@ export class TestProduct implements NodeEntity {
  */
 export async function createTestDatabase(): Promise<DataSource> {
   const dataSource = new DataSource({
-    type: 'sqljs',
-    location: ':memory:',
-    autoSave: false,
+    type: 'better-sqlite3',
+    database: ':memory:',
     entities: [TestProduct, TestCategory],
     synchronize: true,
     logging: false,
