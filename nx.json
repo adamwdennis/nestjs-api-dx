@@ -7,6 +7,26 @@
   "extends": "nx/presets/npm.json",
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
   "nxCloudAccessToken": "ZjIyYzY2ZmYtMWZlZi00MTFlLTg2NjAtOGZkYTRmZTg4OTFifHJlYWQtd3JpdGU=",
+  "release": {
+    "projects": ["packages/nestjs-typeorm-cursor-pagination"],
+    "version": {
+      "conventionalCommits": true
+    },
+    "changelog": {
+      "projectChangelogs": {
+        "createRelease": "github",
+        "renderOptions": {
+          "authors": true,
+          "commitReferences": true,
+          "versionTitleDate": true
+        }
+      }
+    },
+    "git": {
+      "commitMessage": "chore(release): publish {version}",
+      "tagMessage": "Release {version}"
+    }
+  },
   "targetDefaults": {
     "build": {
       "dependsOn": ["^build"]
@@ -28,6 +48,18 @@
       "plugin": "@nx/jest/plugin",
       "options": {
         "targetName": "test"
+      },
+      "exclude": ["apps/sample-nestjs-graphql-api-e2e/**/*"]
+    },
+    {
+      "plugin": "@nx/webpack/plugin",
+      "options": {
+        "buildTargetName": "build",
+        "serveTargetName": "serve",
+        "previewTargetName": "preview",
+        "buildDepsTargetName": "build-deps",
+        "watchDepsTargetName": "watch-deps",
+        "serveStaticTargetName": "serve-static"
       }
     }
   ]

@@ -23,16 +23,23 @@
   "typings": "./src/index.d.ts",
   "private": false,
   "dependencies": {
-    "@nestjs/graphql": "^12.1.1",
+    "@nestjs/graphql": "^12.1.1 || ^13.0.0",
     "class-validator": "^0.14.1",
-    "typeorm": "^0.3.20"
+    "typeorm": "^0.3.20",
+    "@nestjs/testing": "^11.0.0",
+    "@nestjs/typeorm": "^10.0.2"
   },
   "peerDependencies": {
-    "@nestjs/common": "^10.0.0",
-    "@nestjs/graphql": "^12.1.1",
+    "@nestjs/common": "^10.0.0 || ^11.0.0",
+    "@nestjs/graphql": "^12.1.1 || ^13.0.0",
     "typeorm": "^0.3.20"
   },
   "devDependencies": {
-    "@nx/devkit": "^18.0.4"
+    "@apollo/server": "^4.11.3",
+    "@nestjs/apollo": "^12.2.2 || ^13.0.0",
+    "@nestjs/testing": "^10.0.2 || ^11.0.0",
+    "@nestjs/typeorm": "^10.0.2",
+    "@nx/devkit": "^18.0.4",
+    "graphql": "^16.10.0"
   }
 }

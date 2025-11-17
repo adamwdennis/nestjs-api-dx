@@ -1,0 +1,20 @@
+{
+  "name": "sample-nestjs-graphql-api-e2e",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "implicitDependencies": ["sample-nestjs-graphql-api"],
+  "projectType": "application",
+  "targets": {
+    "e2e": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{e2eProjectRoot}"],
+      "options": {
+        "jestConfig": "apps/sample-nestjs-graphql-api-e2e/jest.config.ts",
+        "passWithNoTests": true
+      },
+      "dependsOn": [
+        "sample-nestjs-graphql-api:build",
+        "sample-nestjs-graphql-api:serve"
+      ]
+    }
+  }
+}
