@@ -26,6 +26,7 @@ import { ComparisonOperatorEnum } from './operators/comparison-operator.enum';
 
 import { FilterInput } from './inputs/filter.input';
 import { FiltersExpression } from './inputs/filters-expression.input';
+import { isEmptyValue } from '../utils/is-empty-value';
 
 type ParamValue = string | number | Array<string | number>;
 
@@ -62,7 +63,7 @@ export class WhereBuilder<T extends object> {
 
   private buildExpressionRec(fe: FiltersExpression): string {
     const filtersWithValues = fe.filters?.filter(
-      (f) => f.value && f.value.length > 0,
+      (f) => !isEmptyValue(f.value),
     );
     const filters = filtersWithValues?.map((f) => this.buildFilter(f)) || [];
     const children =
@@ -74,7 +75,7 @@ export class WhereBuilder<T extends object> {
   }
 
   private buildFilter(filter: FilterInput) {
-    if (!filter.value || filter.value.length === 0) {
+    if (isEmptyValue(filter.value)) {
       return; //throw new Error(`filter must have one or more values`);
     }
     const paramName = `${filter.field}_${++this.paramsCount}`;
@@ -84,9 +85,10 @@ export class WhereBuilder<T extends object> {
         return `${filter.field} = :${paramName}`;
       }
       case ComparisonOperatorEnum.BETWEEN: {
+        const paramName2 = `${filter.field}_${++this.paramsCount}`;
         this.params[paramName] = filter.value[0];
-        this.params[paramName + 1] = filter.value[1];
-        return `${filter.field} BETWEEN :${paramName} AND :${paramName + 1}`;
+        this.params[paramName2] = filter.value[1];
+        return `${filter.field} BETWEEN :${paramName} AND :${paramName2}`;
       }
       case ComparisonOperatorEnum.IN: {
         this.params[paramName] = filter.value;

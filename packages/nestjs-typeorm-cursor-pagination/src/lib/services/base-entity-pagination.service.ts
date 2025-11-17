@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 
 import { Repository } from 'typeorm';
 import { PaginationArgs } from '../pagination/pagination.args';
@@ -16,10 +16,14 @@ export abstract class BaseEntityPaginationService<
   T extends NodeEntity,
   U extends PaginationArgs,
 > {
+  protected readonly logger: Logger;
+
   constructor(
     protected readonly repository: Repository<T>,
     protected readonly entityName: string,
-  ) {}
+  ) {
+    this.logger = new Logger(entityName);
+  }
 
   /**
    * This method is used to paginate the results of a query.

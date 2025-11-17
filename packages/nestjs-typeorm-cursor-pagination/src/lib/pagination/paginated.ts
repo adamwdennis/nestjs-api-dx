@@ -35,7 +35,6 @@ export interface IEdgeType<T> {
 export interface IPaginatedType<T> {
   edges: IEdgeType<T>[];
   pageInfo: PageInfo;
-  totalCount: number;
 }
 
 /**

@@ -22,12 +22,30 @@
  * SOFTWARE.
  */
 
-import { Field, ObjectType } from '@nestjs/graphql';
+import { Field, Int, ObjectType } from '@nestjs/graphql';
 
 @ObjectType({
   description: `Returns details about the current page of results`,
 })
 export class PageInfo {
+  constructor({
+    startCursor,
+    endCursor,
+    hasPreviousPage,
+    hasNextPage,
+    countBefore,
+    countAfter,
+    totalCount,
+  }: PageInfo) {
+    this.startCursor = startCursor;
+    this.endCursor = endCursor;
+    this.hasPreviousPage = hasPreviousPage;
+    this.hasNextPage = hasNextPage;
+    this.countBefore = countBefore;
+    this.countAfter = countAfter;
+    this.totalCount = totalCount;
+  }
+
   @Field({ nullable: true })
   startCursor?: string;
 
@@ -43,4 +61,19 @@ export class PageInfo {
     description: `Whether there are more results after this page`,
   })
   hasNextPage!: boolean;
+
+  @Field(() => Int, {
+    description: `The number of records before this page`,
+  })
+  countBefore!: number;
+
+  @Field(() => Int, {
+    description: `The number of records after this page`,
+  })
+  countAfter!: number;
+
+  @Field(() => Int, {
+    description: `The total number of records`,
+  })
+  totalCount!: number;
 }
