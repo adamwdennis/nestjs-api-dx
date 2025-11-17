@@ -180,6 +180,12 @@ importers:
       '@nestjs/graphql':
         specifier: ^12.1.1 || ^13.0.0
         version: 13.2.0(@nestjs/common@11.1.9(class-transformer@0.5.1)(class-validator@0.14.2)(reflect-metadata@0.1.14)(rxjs@7.8.2))(@nestjs/core@11.1.9)(class-transformer@0.5.1)(class-validator@0.14.2)(graphql@16.11.0)(reflect-metadata@0.1.14)
+      '@nestjs/testing':
+        specifier: ^11.0.0
+        version: 11.1.9(@nestjs/common@11.1.9(class-transformer@0.5.1)(class-validator@0.14.2)(reflect-metadata@0.1.14)(rxjs@7.8.2))(@nestjs/core@11.1.9)(@nestjs/platform-express@11.1.9)
+      '@nestjs/typeorm':
+        specifier: ^10.0.2
+        version: 10.0.2(@nestjs/common@11.1.9(class-transformer@0.5.1)(class-validator@0.14.2)(reflect-metadata@0.1.14)(rxjs@7.8.2))(@nestjs/core@11.1.9)(reflect-metadata@0.1.14)(rxjs@7.8.2)(typeorm@0.3.27(babel-plugin-macros@3.1.0)(better-sqlite3@12.4.1)(reflect-metadata@0.1.14)(sql.js@1.13.0)(ts-node@10.9.1(@swc/core@1.5.7(@swc/helpers@0.5.17))(@types/node@20.19.9)(typescript@5.9.3)))
       class-validator:
         specifier: ^0.14.1
         version: 0.14.2
@@ -193,12 +199,6 @@ importers:
       '@nestjs/apollo':
         specifier: ^12.2.2 || ^13.0.0
         version: 13.2.1(@apollo/server@4.12.2(graphql@16.11.0))(@as-integrations/express5@1.1.2(@apollo/server@4.12.2(graphql@16.11.0))(express@5.1.0))(@nestjs/common@11.1.9(class-transformer@0.5.1)(class-validator@0.14.2)(reflect-metadata@0.1.14)(rxjs@7.8.2))(@nestjs/core@11.1.9)(@nestjs/graphql@13.2.0(@nestjs/common@11.1.9(class-transformer@0.5.1)(class-validator@0.14.2)(reflect-metadata@0.1.14)(rxjs@7.8.2))(@nestjs/core@11.1.9)(class-transformer@0.5.1)(class-validator@0.14.2)(graphql@16.11.0)(reflect-metadata@0.1.14))(graphql@16.11.0)
-      '@nestjs/testing':
-        specifier: ^10.0.2 || ^11.0.0
-        version: 11.1.9(@nestjs/common@11.1.9(class-transformer@0.5.1)(class-validator@0.14.2)(reflect-metadata@0.1.14)(rxjs@7.8.2))(@nestjs/core@11.1.9)(@nestjs/platform-express@11.1.9)
-      '@nestjs/typeorm':
-        specifier: ^10.0.2
-        version: 10.0.2(@nestjs/common@11.1.9(class-transformer@0.5.1)(class-validator@0.14.2)(reflect-metadata@0.1.14)(rxjs@7.8.2))(@nestjs/core@11.1.9)(reflect-metadata@0.1.14)(rxjs@7.8.2)(typeorm@0.3.27(babel-plugin-macros@3.1.0)(better-sqlite3@12.4.1)(reflect-metadata@0.1.14)(sql.js@1.13.0)(ts-node@10.9.1(@swc/core@1.5.7(@swc/helpers@0.5.17))(@types/node@20.19.9)(typescript@5.9.3)))
       '@nx/devkit':
         specifier: ^18.0.4
         version: 18.3.5(nx@22.0.1(@swc-node/register@1.9.2(@swc/core@1.5.7(@swc/helpers@0.5.17))(@swc/types@0.1.25)(typescript@5.9.3))(@swc/core@1.5.7(@swc/helpers@0.5.17)))
