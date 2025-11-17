@@ -36,6 +36,32 @@ Runs on every push to `main` and all pull requests.
 
 ---
 
+## Additional Workflows
+
+### Dependency Review (`dependency-review.yml`)
+- Runs on every PR
+- Scans for vulnerable dependencies
+- Fails if moderate+ severity vulnerabilities found
+- Posts summary comment on PR
+
+### Auto-merge Dependabot (`auto-merge-dependabot.yml`)
+- Runs when Dependabot creates PRs
+- Auto-merges patch and minor dependency updates
+- Requires CI to pass first
+
+### CodeQL Security Scan (`codeql.yml`)
+- Runs weekly on Monday
+- Analyzes TypeScript code for security vulnerabilities
+- Results visible in Security tab
+
+### Stale Issue Management (`stale.yml`)
+- Runs daily
+- Marks issues/PRs stale after 90 days of inactivity
+- Closes after 7 additional days
+- Keeps issue tracker clean
+
+---
+
 ## Required Secrets
 
 ### For NPM Publishing
