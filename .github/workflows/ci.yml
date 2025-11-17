@@ -41,8 +41,8 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Rebuild native modules
-        run: pnpm rebuild better-sqlite3
+      - name: Rebuild native modules for Linux
+        run: pnpm install better-sqlite3 --force
 
       - uses: nrwl/nx-set-shas@v4
 
