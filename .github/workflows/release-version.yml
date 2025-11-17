@@ -55,9 +55,6 @@ jobs:
       - name: Run tests
         run: pnpm nx test nestjs-typeorm-cursor-pagination
 
-      - name: Build package
-        run: pnpm nx build nestjs-typeorm-cursor-pagination
-
       - name: Configure git
         run: |
           git config user.name "github-actions[bot]"
@@ -75,6 +72,9 @@ jobs:
         run: |
           VERSION=$(node -p "require('./packages/nestjs-typeorm-cursor-pagination/package.json').version")
           echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Build package
+        run: pnpm nx build nestjs-typeorm-cursor-pagination
 
       - name: Publish to npm
         run: npm publish ./dist/packages/nestjs-typeorm-cursor-pagination --access public --provenance
