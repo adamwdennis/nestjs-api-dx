@@ -36,6 +36,13 @@ Runs on every push to `main` and all pull requests.
 
 ## Additional Workflows
 
+### Release (`release-version.yml`)
+- **Manual trigger via GitHub UI**
+- Actions → "Release" → "Run workflow"
+- Select version type (patch/minor/major)
+- Runs tests → bumps version → builds → publishes to npm → creates GitHub release
+- All-in-one workflow (~3-5 min total)
+
 ### Dependency Review (`dependency-review.yml`)
 - Runs on every PR
 - Scans for vulnerable dependencies
@@ -55,7 +62,7 @@ Runs on every push to `main` and all pull requests.
 ### Stale Issue Management (`stale.yml`)
 - Runs daily
 - Marks issues/PRs stale after 90 days of inactivity
-- Closes after 7 additional days
+- Closes after 30 additional days
 - Keeps issue tracker clean
 
 ---
@@ -71,6 +78,22 @@ Required for the release workflow:
 2. Add to GitHub: Settings → Secrets → Actions → New repository secret
    - Name: `NPM_TOKEN`
    - Value: [your token]
+
+---
+
+## Recommended: Branch Protection
+
+For public repos, protect the main branch:
+
+**Settings → Branches → Add branch protection rule:**
+- Branch name pattern: `main`
+- ✅ Require a pull request before merging
+- ✅ Require status checks to pass before merging
+  - Select: `main` (the CI job)
+- ✅ Require branches to be up to date before merging
+- ✅ Do not allow bypassing the above settings
+
+**Note:** The release workflow uses `GITHUB_TOKEN` which can push to protected branches for version commits.
 
 ---
 

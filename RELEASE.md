@@ -4,87 +4,68 @@ This project uses **Nx Release** with **tag-based CD** for automated publishing 
 
 ## 🎯 Release Strategy
 
-**Hybrid approach:**
-1. **Local:** Version bump + changelog generation (via Nx Release)
-2. **PR Review:** Team reviews the version bump commit
-3. **Merge to main:** Version is updated, but not yet published
-4. **Tag creation:** Creates git tag, triggers automated publish
-5. **GitHub Actions:** Publishes to npm + creates GitHub release
+**Fully automated via GitHub Actions:**
+1. **GitHub UI:** Trigger release workflow, select version type (patch/minor/major)
+2. **GitHub Actions:** Runs tests → bumps version → publishes to npm → creates GitHub release
 
-This gives you control over versioning while automating the publish step.
+Zero local setup required - everything happens in one workflow (~3-5 min).
 
 ---
 
 ## 📋 Prerequisites
 
-### One-time Setup
+### One-time Setup (Required)
 
-1. **npm authentication**
-   ```bash
-   npm login
-   # Use your npm credentials
-   ```
+**1. Add NPM_TOKEN to GitHub Secrets:**
 
-2. **GitHub token for Nx Release** (for creating releases)
-   ```bash
-   # Create a GitHub Personal Access Token with 'repo' scope
-   # https://github.com/settings/tokens/new
+1. Generate token at: https://www.npmjs.com/settings/YOUR_USERNAME/tokens
+   - Create "Automation" token (not "Publish" token)
 
-   # Set as environment variable
-   export GITHUB_TOKEN=your_token_here
+2. Add to GitHub:
+   - Repository → Settings → Secrets and variables → Actions → New repository secret
+   - Name: `NPM_TOKEN`
+   - Value: [your npm token]
 
-   # Or add to ~/.bashrc or ~/.zshrc
-   echo 'export GITHUB_TOKEN=your_token_here' >> ~/.zshrc
-   ```
+**2. Enable Branch Protection (Recommended for public repos):**
 
-3. **Add NPM_TOKEN to GitHub Secrets**
-   ```bash
-   # Generate token at: https://www.npmjs.com/settings/YOUR_USERNAME/tokens
-   # Create "Automation" token (not "Publish" token)
+Settings → Branches → Add branch protection rule:
+- Branch name pattern: `main`
+- ✅ Require a pull request before merging
+- ✅ Require status checks to pass: `main` (CI job)
+- ✅ Require branches to be up to date
 
-   # Add to GitHub:
-   # Repository → Settings → Secrets and variables → Actions → New repository secret
-   # Name: NPM_TOKEN
-   # Value: [your npm token]
-   ```
-
-   **Note:** This is required for automated publishing via GitHub Actions.
+**That's it!** No local setup needed.
 
 ---
 
 ## 🚀 Release Workflow
 
-### Option A: Automatic Version (Recommended)
+### GitHub UI (Recommended - Zero Local Setup)
 
-Uses conventional commits to determine version bump automatically.
+1. **Go to Actions tab** in GitHub
+   - https://github.com/adamwdennis/nestjs-api-dx/actions/workflows/release-version.yml
 
-```bash
-# 1. Ensure all commits follow conventional commit format
-git log --oneline -10
+2. **Click "Run workflow"**
+   - Select version bump: `patch`, `minor`, or `major`
+   - Click green "Run workflow" button
 
-# Commit types that trigger version bumps:
-# - feat: → minor version (0.1.0 → 0.2.0)
-# - fix: → patch version (0.1.0 → 0.1.1)
-# - BREAKING CHANGE: → major version (0.1.0 → 1.0.0)
+3. **Wait for automation** (~3-5 minutes)
+   - Runs tests (fails if tests fail)
+   - Bumps version + creates commit + tag
+   - Builds package
+   - Publishes to npm
+   - Creates GitHub release
 
-# 2. Create version bump (interactive)
-pnpm release:version
+**Version types:**
+- `patch`: 0.0.24 → 0.0.25 (bug fixes)
+- `minor`: 0.0.24 → 0.1.0 (new features)
+- `major`: 0.0.24 → 1.0.0 (breaking changes)
 
-# This will:
-# ✅ Analyze commits since last release
-# ✅ Determine version bump automatically
-# ✅ Update package.json
-# ✅ Generate CHANGELOG.md
-# ✅ Create git commit
-# ✅ Create git tag
+---
 
-# 3. Push to remote (triggers publish)
-git push && git push --tags
-```
+### Local (Alternative)
 
-### Option B: Manual Version
-
-Specify the version bump type explicitly.
+If you prefer local workflow:
 
 ```bash
 # Patch version (0.0.24 → 0.0.25)
@@ -96,21 +77,13 @@ pnpm release:version:minor
 # Major version (0.0.24 → 1.0.0)
 pnpm release:version:major
 
-# Push to remote
+# Push to remote (triggers publish)
 git push && git push --tags
 ```
 
-### Option C: Specific Version
-
-Set exact version number.
-
-```bash
-# Set specific version
-pnpm nx release version 1.2.3
-
-# Push to remote
-git push && git push --tags
-```
+**Requirements for local:**
+- npm login configured
+- GITHUB_TOKEN environment variable set
 
 ---
 
@@ -150,59 +123,56 @@ Add `!` or `BREAKING CHANGE:` for major version bump.
 
 ## 🔄 Complete Release Example
 
-```bash
-# 1. Make changes and commit with conventional commit format
-git checkout -b feat/add-reverse-sorting
-# ... make changes ...
-git add .
-git commit -m "feat: add reverse sorting parameter"
+**Via GitHub UI:**
 
-# 2. Push and create PR
-git push -u origin feat/add-reverse-sorting
-gh pr create --title "feat: add reverse sorting parameter"
+1. **Merge your feature PR to main**
+   ```bash
+   # Locally develop feature
+   git checkout -b feat/add-reverse-sorting
+   # ... make changes ...
+   git commit -m "feat: add reverse sorting parameter"
+   git push -u origin feat/add-reverse-sorting
+   # Create PR, get approval, merge
+   ```
 
-# 3. After PR is approved and merged, checkout main
-git checkout main
-git pull
+2. **Trigger release via GitHub Actions**
+   - Go to: https://github.com/adamwdennis/nestjs-api-dx/actions/workflows/release-version.yml
+   - Click "Run workflow"
+   - Select version type: `minor` (for new feature)
+   - Click "Run workflow"
 
-# 4. Create version and changelog (DO THIS IN SEPARATE PR)
-git checkout -b release/v0.1.0
-pnpm release:version
-# Review the changes (package.json, CHANGELOG.md)
+3. **Automation handles everything:**
+   - ✅ Runs tests (fails if tests fail)
+   - ✅ Builds package
+   - ✅ Bumps version to 0.1.0
+   - ✅ Generates CHANGELOG.md
+   - ✅ Creates commit on main
+   - ✅ Creates git tag v0.1.0
+   - ✅ Publishes to npm
+   - ✅ Creates GitHub release
 
-# 5. Create release PR
-git push -u origin release/v0.1.0
-gh pr create --title "chore(release): publish v0.1.0" --body "Version bump and changelog"
-
-# 6. After release PR is merged, create tag
-git checkout main
-git pull
-git tag v0.1.0
-git push origin v0.1.0
-
-# 7. GitHub Actions automatically:
-#    ✅ Runs tests
-#    ✅ Builds package
-#    ✅ Publishes to npm
-#    ✅ Creates GitHub release
-```
+4. **Done!** Check:
+   - npm: https://www.npmjs.com/package/@adamwdennis/nestjs-typeorm-cursor-pagination
+   - GitHub releases: https://github.com/adamwdennis/nestjs-api-dx/releases
 
 ---
 
-## 🎬 What Happens on Tag Push
+## 🎬 What Happens During Release
 
-When you push a tag (e.g., `v1.0.0`), the **Release workflow** triggers:
+When you trigger the **Release workflow** via GitHub UI:
 
-1. **Checkout code** at the tagged commit
+1. **Checkout code** from main branch
 2. **Setup Node.js** and pnpm
-3. **Install dependencies** with frozen lockfile
-4. **Run tests** to ensure quality
+3. **Install dependencies** with caching
+4. **Run tests** to ensure quality (fails if tests fail)
 5. **Build package** for distribution
-6. **Verify version** matches tag
-7. **Publish to npm** with provenance (supply chain security)
-8. **Create GitHub release** with auto-generated changelog
+6. **Bump version** in package.json
+7. **Generate CHANGELOG.md** from commits
+8. **Create commit + tag** and push to main
+9. **Publish to npm** with provenance (supply chain security)
+10. **Create GitHub release** with auto-generated notes
 
-View progress: https://github.com/adamwdennis/nestjs-api-dx/actions/workflows/release.yml
+View progress: https://github.com/adamwdennis/nestjs-api-dx/actions/workflows/release-version.yml
 
 ---
 
@@ -210,30 +180,26 @@ View progress: https://github.com/adamwdennis/nestjs-api-dx/actions/workflows/re
 
 The release workflow includes several safety checks:
 
-1. **Version mismatch check**
+1. **Test validation**
    ```bash
-   # Fails if tag doesn't match package.json version
-   # Tag: v1.0.0
-   # package.json: 0.9.0
-   # → ERROR: Version mismatch
-   ```
-
-2. **Test validation**
-   ```bash
-   # All tests must pass before publish
+   # All tests must pass before version bump
    pnpm nx test nestjs-typeorm-cursor-pagination
+   # If tests fail, workflow stops immediately
    ```
 
-3. **Build validation**
+2. **Build validation**
    ```bash
-   # Build must succeed before publish
+   # Build must succeed before version bump
    pnpm nx build nestjs-typeorm-cursor-pagination
+   # If build fails, workflow stops immediately
    ```
 
-4. **npm provenance** (supply chain security)
+3. **npm provenance** (supply chain security)
    - Links npm package to source code
    - Verifiable build process
    - Requires `id-token: write` permission
+
+**Important:** The workflow runs tests BEFORE bumping the version, so you'll never create a version tag for broken code.
 
 ---
 
@@ -357,20 +323,21 @@ npm pack --dry-run
 
 ## 🎯 Quick Reference
 
-```bash
-# Most common workflow
-pnpm release:version              # Auto-detect version bump
-git push && git push --tags       # Trigger publish
+**GitHub UI Release (Recommended):**
+1. Go to Actions → "Release" workflow
+2. Click "Run workflow"
+3. Select version type (patch/minor/major)
+4. Wait ~3-5 min for automation
 
-# Manual version bumps
+**Local Release (Alternative):**
+```bash
 pnpm release:version:patch        # 0.0.24 → 0.0.25
 pnpm release:version:minor        # 0.0.24 → 0.1.0
 pnpm release:version:major        # 0.0.24 → 1.0.0
-
-# Check what will happen
-pnpm nx release version --dry-run
-
-# View releases
-https://github.com/adamwdennis/nestjs-api-dx/releases
-https://www.npmjs.com/package/@adamwdennis/nestjs-typeorm-cursor-pagination
+git push && git push --tags
 ```
+
+**Monitor:**
+- Releases: https://github.com/adamwdennis/nestjs-api-dx/releases
+- npm: https://www.npmjs.com/package/@adamwdennis/nestjs-typeorm-cursor-pagination
+- Workflows: https://github.com/adamwdennis/nestjs-api-dx/actions
