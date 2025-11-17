@@ -50,7 +50,7 @@ jobs:
         run: pnpm install
 
       - name: Rebuild native modules for Linux
-        run: pnpm install better-sqlite3 --force
+        run: npm rebuild better-sqlite3
 
       - name: Run tests
         run: pnpm nx test nestjs-typeorm-cursor-pagination
