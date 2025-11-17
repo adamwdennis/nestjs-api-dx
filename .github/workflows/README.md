@@ -36,12 +36,19 @@ Runs on every push to `main` and all pull requests.
 
 ## Additional Workflows
 
-### Release (`release-version.yml`)
+### Release (Manual) (`release-version.yml`)
 - **Manual trigger via GitHub UI**
 - Actions → "Release" → "Run workflow"
 - Select version type (patch/minor/major)
 - Runs tests → bumps version → builds → publishes to npm → creates GitHub release
 - All-in-one workflow (~3-5 min total)
+
+### Release (Tag-based) (`release.yml`)
+- **Automatic trigger on tag push**
+- Push any tag matching `v*.*.*` (e.g., `v1.0.0`)
+- Verifies package.json version matches tag
+- Runs tests → builds → publishes to npm → creates GitHub release
+- Use this if you prefer local version bumps
 
 ### Dependency Review (`dependency-review.yml`)
 - Runs on every PR

@@ -10,7 +10,11 @@
   "release": {
     "projects": ["packages/nestjs-typeorm-cursor-pagination"],
     "version": {
-      "conventionalCommits": true
+      "conventionalCommits": true,
+      "git": {
+        "commitMessage": "chore(release): publish {version}",
+        "tagMessage": "Release {version}"
+      }
     },
     "changelog": {
       "projectChangelogs": {
@@ -20,11 +24,11 @@
           "commitReferences": true,
           "versionTitleDate": true
         }
+      },
+      "git": {
+        "commit": true,
+        "tag": false
       }
-    },
-    "git": {
-      "commitMessage": "chore(release): publish {version}",
-      "tagMessage": "Release {version}"
     }
   },
   "targetDefaults": {
