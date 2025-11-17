@@ -8,7 +8,12 @@
     "test:nestjs-typeorm-cursor-pagination:coverage": "nx test nestjs-typeorm-cursor-pagination --coverage",
     "lint:nestjs-typeorm-cursor-pagination": "nx lint nestjs-typeorm-cursor-pagination",
     "build:nestjs-typeorm-cursor-pagination": "nx build nestjs-typeorm-cursor-pagination",
-    "publish": "npm publish dist/packages/nestjs-typeorm-cursor-pagination"
+    "release:version": "nx release version",
+    "release:version:patch": "nx release version patch",
+    "release:version:minor": "nx release version minor",
+    "release:version:major": "nx release version major",
+    "release:changelog": "nx release changelog",
+    "release:publish": "nx release publish"
   },
   "private": false,
   "devDependencies": {
