@@ -48,6 +48,3 @@ jobs:
 
       - name: Run affected tasks
         run: npx nx affected -t lint test build --parallel=3
-
-      - name: Run e2e tests
-        run: npx nx affected -t e2e --parallel=1

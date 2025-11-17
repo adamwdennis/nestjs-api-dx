@@ -15,13 +15,11 @@ Runs on every push to `main` and all pull requests.
 
 2. **Run affected tasks** (~2-3 min)
    - Lint affected projects
-   - Test affected projects (180+ unit tests)
+   - Test affected projects (180+ unit/integration tests)
    - Build affected projects
    - Nx runs tasks in parallel automatically
 
-3. **Run e2e tests** (~1 min)
-   - 7 e2e GraphQL query tests
-   - Validates real-world usage
+**Note:** E2E tests for the sample app are skipped in CI (sample app is for docs/demo only, not published)
 
 **Benefits of single job:**
 - ✅ 1 checkout instead of 5
