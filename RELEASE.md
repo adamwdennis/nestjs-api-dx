@@ -4,11 +4,16 @@ This project uses **Nx Release** with **tag-based CD** for automated publishing 
 
 ## 🎯 Release Strategy
 
-**Fully automated via GitHub Actions:**
-1. **GitHub UI:** Trigger release workflow, select version type (patch/minor/major)
-2. **GitHub Actions:** Runs tests → bumps version → publishes to npm → creates GitHub release
+**Two release methods:**
 
-Zero local setup required - everything happens in one workflow (~3-5 min).
+**Option 1: GitHub UI (Zero local setup)**
+1. Actions → "Release" → select version type
+2. Automation bumps version → tests → publishes
+
+**Option 2: Tag-based (Local control)**
+1. Bump version locally: `pnpm release:version:patch`
+2. Push tag: `git push --tags`
+3. Automation tests → publishes
 
 ---
 
@@ -63,9 +68,9 @@ Settings → Branches → Add branch protection rule:
 
 ---
 
-### Local (Alternative)
+### Tag-based (Local Control)
 
-If you prefer local workflow:
+Bump version locally, push tag to trigger automation:
 
 ```bash
 # Patch version (0.0.24 → 0.0.25)
@@ -77,13 +82,17 @@ pnpm release:version:minor
 # Major version (0.0.24 → 1.0.0)
 pnpm release:version:major
 
-# Push to remote (triggers publish)
-git push && git push --tags
+# Push tag (triggers automated publish)
+git push --tags
 ```
 
-**Requirements for local:**
-- npm login configured
-- GITHUB_TOKEN environment variable set
+**Requirements:**
+- GITHUB_TOKEN environment variable set (for changelog)
+
+**What happens:**
+1. You bump version locally + create tag
+2. Push tag to GitHub
+3. GitHub Actions runs tests, publishes to npm, creates release
 
 ---
 
@@ -323,18 +332,13 @@ npm pack --dry-run
 
 ## 🎯 Quick Reference
 
-**GitHub UI Release (Recommended):**
-1. Go to Actions → "Release" workflow
-2. Click "Run workflow"
-3. Select version type (patch/minor/major)
-4. Wait ~3-5 min for automation
+**Option 1: GitHub UI (Zero setup)**
+1. Actions → "Release" → select version → done
 
-**Local Release (Alternative):**
+**Option 2: Tag-based (Local control)**
 ```bash
 pnpm release:version:patch        # 0.0.24 → 0.0.25
-pnpm release:version:minor        # 0.0.24 → 0.1.0
-pnpm release:version:major        # 0.0.24 → 1.0.0
-git push && git push --tags
+git push --tags                   # Triggers automation
 ```
 
 **Monitor:**
